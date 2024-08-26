@@ -33,7 +33,10 @@
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "@secretlint/secretlint-rule-github": "^8.2.4",
+    "@secretlint/secretlint-rule-no-dotenv": "^8.2.4",
     "@secretlint/secretlint-rule-preset-recommend": "^8.2.4",
+    "@secretlint/secretlint-rule-privatekey": "^8.2.4",
     "commitizen": "^4.3.0",
     "concurrently": "^8.2.2",
     "cz-conventional-changelog": "^3.3.0",
