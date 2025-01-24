@@ -2,28 +2,30 @@ import migrationRunner from "node-pg-migrate";
 import { resolve } from "node:path";
 import database from "infra/database";
 import { createRouter } from "next-connect";
-import { onErrorHandler, onNoMatchHandler } from "infra/middlewares";
+import controller from "infra/controller";
 
 const router = createRouter();
 
 router.get(getHandler);
 router.post(postHandler);
 
-const getDefaultMigrationOptions = (dbClient) => ({
-  dbClient,
+export default router.handler(controller.errorHandlers);
+
+const defaultMigrationOptions = {
   databaseUrl: process.env.DATABASE_URL,
   dryRun: true,
   dir: resolve("infra", "migrations"),
   direction: "up",
   verbose: true,
   migrationsTable: "pgmigrations",
-});
+};
 
 async function getHandler(request, response) {
   const dbClient = await database.getNewClient();
-  const pendingMigrations = await migrationRunner(
-    getDefaultMigrationOptions(dbClient),
-  );
+  const pendingMigrations = await migrationRunner({
+    ...defaultMigrationOptions,
+    dbClient,
+  });
   await dbClient.end();
   response.status(200).json(pendingMigrations);
 }
@@ -31,7 +33,8 @@ async function getHandler(request, response) {
 async function postHandler(request, response) {
   const dbClient = await database.getNewClient();
   const migratedMigrations = await migrationRunner({
-    ...getDefaultMigrationOptions(),
+    ...defaultMigrationOptions,
+    dbClient,
     dryRun: false,
   });
 
@@ -43,8 +46,3 @@ async function postHandler(request, response) {
 
   response.status(200).json(migratedMigrations);
 }
-
-export default router.handler({
-  onNoMatch: onNoMatchHandler,
-  onError: onErrorHandler,
-});

@@ -1,12 +1,13 @@
 import { InternalServerError, MethodNotAllowedError } from "./errors";
 
-export function onNoMatchHandler(_, response) {
+function onNoMatchHandler(_, response) {
   const publicErrorObject = new MethodNotAllowedError();
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
-export function onErrorHandler(error, _, response) {
+function onErrorHandler(error, _, response) {
   const publicErrorObject = new InternalServerError({
+    statusCode: error.statusCode,
     cause: error,
   });
 
@@ -14,3 +15,12 @@ export function onErrorHandler(error, _, response) {
 
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
+
+const controller = {
+  errorHandlers: {
+    onNoMatch: onNoMatchHandler,
+    onError: onErrorHandler,
+  },
+};
+
+export default controller;
