@@ -38,6 +38,7 @@
   "devDependencies": {
     "@commitlint/cli": "19.6.1",
     "@commitlint/config-conventional": "19.6.0",
+    "@faker-js/faker": "9.7.0",
     "@secretlint/secretlint-rule-github": "9.0.0",
     "@secretlint/secretlint-rule-no-dotenv": "9.0.0",
     "@secretlint/secretlint-rule-preset-recommend": "9.0.0",
