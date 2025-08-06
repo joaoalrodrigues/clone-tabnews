@@ -2,7 +2,6 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller";
 import authentication from "models/authentication";
 import session from "models/session";
-import * as cookie from "cookie";
 import { UnauthorizedError } from "infra/errors";
 
 const router = createRouter();
@@ -21,15 +20,9 @@ async function postHandler(request, response) {
     );
 
     const newSession = await session.create(authenticatedUser.id);
-    const setCookie = cookie.serialize("session_id", newSession.token, {
-      value: newSession.token,
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000, // Convert milliseconds to seconds
-    });
 
-    response.setHeader("Set-Cookie", setCookie);
+    controller.setSessionCookie(response, newSession.token);
+
     return response.status(201).json(newSession);
   } catch (error) {
     if (error instanceof UnauthorizedError) {
